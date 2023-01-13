@@ -1,0 +1,23 @@
+{
+    "IpRepl": [
+        {
+            "Enable": true,
+            "ToPub": true,
+            "ToLoc": false,
+            "ToIP": "127.0.0.1",
+            "_ToIP": "change current 'localhost' to which IP?",
+            "NewPort": -1,
+            "OnlyFirst": false,
+            "Files": [
+                "./src/share/ip.ts"
+            ]
+        }
+    ],
+    "SymbolRepl": [
+        {
+            "Enable": true,
+            "OnlyForCmt": true,
+            "Files": []
+        }
+    ]
+}
