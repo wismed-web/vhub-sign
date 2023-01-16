@@ -43,7 +43,7 @@ onMounted(async () => {
 }
 
 body {
-    background-image: url('assets/bg.jpg');
+    background-image: url('assets/bg.png');
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;

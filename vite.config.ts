@@ -9,7 +9,8 @@ export default defineConfig({
         vue(),
         AutoImport({
             imports: ["vue"],
-        }),],
+        })
+    ],
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url))
