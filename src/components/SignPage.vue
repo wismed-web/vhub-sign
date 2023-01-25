@@ -37,7 +37,7 @@
 <script setup lang="ts">
 
 import { loginToken, postLogin, postSignUp, postEmailVerify, } from "@/share/share";
-import { IP_VIEW } from "@/share/ip";
+import { IP_MAIN } from "@/share/ip";
 
 let signPage = ref("in"); // page
 let unameLogin = ref("");
@@ -53,7 +53,7 @@ onMounted(async () => {
 })
 
 const viewSite = async () => {
-    location.replace(`${IP_VIEW}?auth=${loginToken.value}`)
+    location.replace(`${IP_MAIN}?auth=${loginToken.value}`)
 }
 
 const doLogin = async () => {
