@@ -133,3 +133,4 @@ coverage
 *.sw?
 
 nohup.out
+src/share/original
