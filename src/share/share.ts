@@ -1,8 +1,24 @@
-import { fetchBodyForm, mEmpty } from "@/share/fetch";
+import { fetchBodyForm, fetchNoBody, mEmpty } from "@/share/fetch";
 
 export const loginOK = ref(false);
 export const loginUser = ref("");
 export const loginToken = ref(""); // without 'Bearer '
+export const pwdRule = ref("");
+
+export const getPwdRule = async () => {
+    const rt = (await fetchNoBody(
+        `/api/user/pub/pwdrule`,
+        "GET",
+        mEmpty,
+        ""
+    )) as any[];
+    if (rt[1] != 200) {
+        alert(rt[0]);
+        return false;
+    }
+    pwdRule.value = rt[0];
+    return true;
+};
 
 export const postLogin = async (uname: string, pwd: string) => {
     const mForm = new Map<string, any>([

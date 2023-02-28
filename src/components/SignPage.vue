@@ -1,28 +1,25 @@
 <template>
     <div class="login-page">
-
         <div v-if="signPage == 'in'">
             <h1>Sign In</h1>
-            <input class="textbox" v-model="unameLogin" type="text" placeholder="User Name" autofocus required />
+            <input class="textbox" v-model="unameLogin" type="text" placeholder="User Name" ref="unameInput" autofocus required />
             <input class="textbox" v-model="pwdLogin" type="password" placeholder="Password" required />
             <button class="btn0" @click="doLogin()">Sign In</button>
             <p> Don't have an account?
                 <a href="#" @click="signUpPage()">Sign up here</a>
             </p>
         </div>
-
         <div v-if="signPage == 'up'">
             <h1>Sign Up</h1>
             <input class="textbox" v-model="unameReg" type="text" placeholder="User Name" required />
             <input class="textbox" v-model="emailReg" type="email" placeholder="Email" required />
-            <input class="textbox" v-model="pwdReg" type="password" placeholder="Password" required />
+            <input class="textbox" v-model="pwdReg" type="password" :placeholder="`Password: (${pwdRule})`" required />
             <input class="textbox" v-model="confirmReg" type="password" placeholder="Confirm Password" required />
             <button class="btn0" @click="doRegister()">Sign Up</button>
             <p> Already have an account?
                 <a href="#" @click="signInPage()">Sign in here</a>
             </p>
         </div>
-
         <div v-if="signPage == 'verify'">
             <h1>Email Verification</h1>
             <input class="textbox" v-model="unameReg" required readonly />
@@ -30,37 +27,41 @@
             <button class="btn0" @click="doEmailVerification()">Verify</button>
             <button class="btn1" @click="doRegister()">Resent</button>
         </div>
-
     </div>
 </template>
 
 <script setup lang="ts">
 
-import { loginToken, postLogin, postSignUp, postEmailVerify, } from "@/share/share";
-import { IP_MAIN } from "@/share/ip";
+import { useCookies } from "vue3-cookies";
+import { loginToken, postLogin, postSignUp, postEmailVerify, getPwdRule, pwdRule } from "@/share/share";
+import { Domain, IP_MAIN } from "@/share/ip";
 
-let signPage = ref("in"); // page
-let unameLogin = ref("");
-let pwdLogin = ref("");
-let unameReg = ref("");
-let emailReg = ref("");
-let pwdReg = ref("");
-let confirmReg = ref("");
-let codeReg = ref("");
+const { cookies } = useCookies();
+const signPage = ref("in"); // page
+const unameLogin = ref("");
+const pwdLogin = ref("");
+const unameReg = ref("");
+const emailReg = ref("");
+const pwdReg = ref("");
+const confirmReg = ref("");
+const codeReg = ref("");
+const unameInput = ref();
 
 onMounted(async () => {
-
+    unameInput.value.focus();
+    getPwdRule();
 })
 
-const viewSite = async () => {
-    location.replace(`${IP_MAIN}?auth=${loginToken.value}`)
+const mainSite = async () => {
+    cookies.set("auth", `${loginToken.value}`, "1d", "/", "." + Domain, false, "Lax");
+    location.replace(`${IP_MAIN}`)
 }
 
 const doLogin = async () => {
     const ok = await postLogin(unameLogin.value, pwdLogin.value);
     if (ok) {
         // alert('login successfully')
-        viewSite()
+        mainSite()
     }
 };
 
