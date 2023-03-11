@@ -19,7 +19,7 @@
             <SignCaptcha :belongsTo="'sign-up'"></SignCaptcha>
             <span id="agreement">
                 <input type="checkbox" v-model="agrmtSta" />
-                <a href="#" @click="ToAgreementPage()">agreement</a>
+                accept <a href="#" @click="ToAgreementPage()">agreement</a>
             </span>
             <button class="btn0" :disabled="DisableSignUp || !agrmtSta" @click="Register()" :title="BtnTip">Sign Up</button>
             <p id="to-sign-in"> Already have an account?
@@ -34,7 +34,7 @@
             <button class="btn1" @click="Register()">Resent</button>
         </div>
     </div>
-    <div id="page-loader" v-if="showLoader">
+    <div id="page-loader" v-if="loading">
         <Loader />
     </div>
 </template>
@@ -59,7 +59,7 @@ const pwdReg = ref("");
 const confirmReg = ref("");
 const codeReg = ref("");
 const agrmtSta = ref(false);
-const showLoader = ref(false);
+const loading = ref(false);
 
 // for UI focus
 const unameInputSI = ref();
@@ -101,36 +101,35 @@ const mainSite = async () => {
 }
 
 const Login = async () => {
-    showLoader.value = true;
+    loading.value = true;
     if (await postLogin(unameLogin.value, pwdLogin.value)) {
         // alert('login successfully')
         mainSite()
     }
-    showLoader.value = false;
+    loading.value = false;
 };
 
 const Register = async () => {
     if (pwdReg.value != confirmReg.value) {
         alert("password confirmation error");
         confirmReg.value = "";
-        showLoader.value = false;
         return;
     }
-    showLoader.value = true;
+    loading.value = true;
     if (await postSignUp(unameReg.value, emailReg.value, pwdReg.value)) {
         alert(`verification code sent to your email ${emailReg.value}`);
         ToEmailVerifyPage();
     }
-    showLoader.value = false;
+    loading.value = false;
 };
 
 const EmailVerification = async () => {
-    showLoader.value = true;
+    loading.value = true;
     if (await postEmailVerify(unameReg.value, codeReg.value)) {
         alert("email verified, please login");
         ToSignInPage();
     }
-    showLoader.value = false;
+    loading.value = false;
 };
 
 const ToSignUpPage = () => { signPage.value = "up"; };
@@ -187,13 +186,15 @@ h1 {
 #to-sign-up {
     position: absolute;
     right: 5%;
-    bottom: -3%;
+    bottom: 0%;
+    font-size: small;
 }
 
 #to-sign-in {
     position: absolute;
     right: 5%;
-    bottom: -3%;
+    bottom: 0%;
+    font-size: small;
 }
 
 #agreement {
