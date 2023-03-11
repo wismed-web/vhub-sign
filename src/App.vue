@@ -1,5 +1,5 @@
 <template>
-    <SignPage v-if="disp" />
+    <SignPage v-if="display" />
 </template>
 
 <script setup lang="ts">
@@ -17,12 +17,12 @@ const onResize = () => {
     console.log("Height:", Height);
 };
 
-let disp = ref(false);
+const display = ref(false);
 
 onMounted(async () => {
     // test backend api available
-    disp.value = await ping();
-    if (!disp.value) {
+    display.value = await ping();
+    if (!display.value) {
         alert("backend api service is not available");
     }
 

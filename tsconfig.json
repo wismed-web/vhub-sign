@@ -18,7 +18,9 @@
             "dom"
         ],
         "importsNotUsedAsValues": "remove",
-        "isolatedModules": false
+        "isolatedModules": false,
+        "noImplicitAny": false,
+        "allowJs": true,
     },
     "references": [
         {

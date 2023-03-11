@@ -32,10 +32,10 @@ const visible = ref(true)
 
 onMounted(async () => {
     switch (props.belongsTo) {
-        case 'signup':
-            dxTop.value = '80%'
+        case 'sign-up':
+            dxTop.value = '77%'
             break;
-        case 'signin':
+        case 'sign-in':
             dxTop.value = '53%'
             break;
     }
@@ -50,12 +50,12 @@ const handleCheck = () => {
         visible.value = false // captcha ok, remove it
 
         switch (props.belongsTo) {
-            case 'signup':
+            case 'sign-up':
                 DisableSignUp.value = false // captcha ok, allow sign-up
                 BtnTip.value = ''
                 break;
 
-            case 'signin':
+            case 'sign-in':
                 DisableSignIn.value = false // captcha ok, allow sign-in
                 BtnTip.value = ''
                 break;

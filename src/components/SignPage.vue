@@ -4,10 +4,10 @@
             <h1>Sign In</h1>
             <input class="textbox" v-model="unameLogin" type="text" placeholder="User Name" ref="unameInputSI" autofocus required />
             <input class="textbox" v-model="pwdLogin" type="password" placeholder="Password" required />
-            <SignCaptcha :belongsTo="'signin'"></SignCaptcha>
-            <button class="btn0" :disabled="DisableSignIn" @click="doLogin()" :title="BtnTip">Sign In</button>
-            <p id="to-signup"> Don't have an account?
-                <a href="#" @click="toSignUpPage()">Sign up here</a>
+            <SignCaptcha :belongsTo="'sign-in'"></SignCaptcha>
+            <button class="btn0" :disabled="DisableSignIn" @click="Login()" :title="BtnTip">Sign In</button>
+            <p id="to-sign-up"> Don't have an account?
+                <a href="#" @click="ToSignUpPage()">Sign up here</a>
             </p>
         </div>
         <div v-if="signPage == 'up'">
@@ -16,22 +16,26 @@
             <input class="textbox" v-model="emailReg" type="email" placeholder="Email" required />
             <input class="textbox" v-model="pwdReg" type="password" :placeholder="`Password: (${pwdRule})`" required />
             <input class="textbox" v-model="confirmReg" type="password" placeholder="Confirm Password" required />
-            <SignCaptcha :belongsTo="'signup'"></SignCaptcha>
-            <span id="agreement"> agreement?
-                <a href="#" @click="toAgreementPage()">agreement</a>
+            <SignCaptcha :belongsTo="'sign-up'"></SignCaptcha>
+            <span id="agreement">
+                <input type="checkbox" v-model="agrmtSta" />
+                <a href="#" @click="ToAgreementPage()">agreement</a>
             </span>
-            <button class="btn0" :disabled="DisableSignUp" @click="doRegister()" :title="BtnTip">Sign Up</button>
-            <p id="to-signin"> Already have an account?
-                <a href="#" @click="toSignInPage()">Sign in here</a>
+            <button class="btn0" :disabled="DisableSignUp || !agrmtSta" @click="Register()" :title="BtnTip">Sign Up</button>
+            <p id="to-sign-in"> Already have an account?
+                <a href="#" @click="ToSignInPage()">Sign in here</a>
             </p>
         </div>
         <div v-if="signPage == 'verify'">
             <h1>Email Verification</h1>
             <input class="textbox" v-model="unameReg" required readonly />
             <input class="textbox" v-model="codeReg" type="text" placeholder="Verification Code In Your Email" ref="codeInput" required />
-            <button class="btn0" @click="doEmailVerification()">Verify</button>
-            <button class="btn1" @click="doRegister()">Resent</button>
+            <button class="btn0" @click="EmailVerification()">Verify</button>
+            <button class="btn1" @click="Register()">Resent</button>
         </div>
+    </div>
+    <div id="page-loader" v-if="showLoader">
+        <Loader />
     </div>
 </template>
 
@@ -39,6 +43,7 @@
 
 import { useCookies } from "vue3-cookies";
 import SignCaptcha from "./SignCaptcha.vue";
+import Loader from "./Loader.vue";
 import { loginToken, postLogin, postSignUp, postEmailVerify, getPwdRule, pwdRule } from "@/share/share";
 import { Domain, URL_API, URL_MAIN } from "@/share/ip";
 import { DisableSignIn, DisableSignUp, BtnTip } from "@/share/shared";
@@ -53,6 +58,8 @@ const emailReg = ref("");
 const pwdReg = ref("");
 const confirmReg = ref("");
 const codeReg = ref("");
+const agrmtSta = ref(false);
+const showLoader = ref(false);
 
 // for UI focus
 const unameInputSI = ref();
@@ -83,7 +90,7 @@ watchEffect(async () => {
     }
 })
 
-const viewSite = async () => {
+const mainSite = async () => {
 
     // *** no longer use 'URL with auth' ***
     // location.replace(`${URL_MAIN}?auth=${loginToken.value}`)
@@ -93,39 +100,43 @@ const viewSite = async () => {
     location.replace(`${URL_MAIN}`)
 }
 
-const doLogin = async () => {
-    const ok = await postLogin(unameLogin.value, pwdLogin.value);
-    if (ok) {
+const Login = async () => {
+    showLoader.value = true;
+    if (await postLogin(unameLogin.value, pwdLogin.value)) {
         // alert('login successfully')
-        viewSite()
+        mainSite()
     }
+    showLoader.value = false;
 };
 
-const doRegister = async () => {
+const Register = async () => {
     if (pwdReg.value != confirmReg.value) {
         alert("password confirmation error");
         confirmReg.value = "";
+        showLoader.value = false;
         return;
     }
-    const ok = await postSignUp(unameReg.value, emailReg.value, pwdReg.value);
-    if (ok) {
+    showLoader.value = true;
+    if (await postSignUp(unameReg.value, emailReg.value, pwdReg.value)) {
         alert(`verification code sent to your email ${emailReg.value}`);
-        toEmailVerifyPage();
+        ToEmailVerifyPage();
     }
+    showLoader.value = false;
 };
 
-const doEmailVerification = async () => {
-    const ok = await postEmailVerify(unameReg.value, codeReg.value);
-    if (ok) {
+const EmailVerification = async () => {
+    showLoader.value = true;
+    if (await postEmailVerify(unameReg.value, codeReg.value)) {
         alert("email verified, please login");
-        toSignInPage();
+        ToSignInPage();
     }
+    showLoader.value = false;
 };
 
-const toSignUpPage = () => { signPage.value = "up"; };
-const toSignInPage = () => { signPage.value = "in"; };
-const toEmailVerifyPage = () => { signPage.value = "verify"; };
-const toAgreementPage = () => {
+const ToSignUpPage = () => { signPage.value = "up"; };
+const ToSignInPage = () => { signPage.value = "in"; };
+const ToEmailVerifyPage = () => { signPage.value = "verify"; };
+const ToAgreementPage = () => {
     window.open(`${URL_API}/agreement`)
 }
 
@@ -137,9 +148,16 @@ h1 {
     margin-bottom: 3%;
 }
 
+#page-loader {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 #login-page {
     position: absolute;
-    top: 50%;
+    top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 45%;
@@ -150,7 +168,7 @@ h1 {
 }
 
 .textbox {
-    margin-bottom: 2%;
+    margin-bottom: 1.5%;
     width: 90%;
 }
 
@@ -166,22 +184,22 @@ h1 {
     margin-bottom: 5%;
 }
 
-#to-signup {
+#to-sign-up {
     position: absolute;
     right: 5%;
-    bottom: -2%;
+    bottom: -3%;
 }
 
-#to-signin {
+#to-sign-in {
     position: absolute;
     right: 5%;
-    bottom: -2%;
+    bottom: -3%;
 }
 
 #agreement {
     position: absolute;
     right: 13%;
-    bottom: 15%;
+    bottom: 16%;
     font-size: small;
 }
 </style>

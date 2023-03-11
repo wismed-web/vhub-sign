@@ -36,8 +36,7 @@ export const postLogin = async (uname: string, pwd: string) => {
         alert(rt[0]);
         return false;
     }
-    const auth: string = rt[0].auth;
-    loginToken.value = auth.replace("Bearer ", "");
+    loginToken.value = rt[0].auth; // without "Bearer "
     return true;
 };
 
