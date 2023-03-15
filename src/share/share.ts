@@ -5,6 +5,7 @@ export const loginUser = ref("");
 export const loginToken = ref(""); // without 'Bearer '
 export const pwdRule = ref("");
 
+// fill pwdRule
 export const getPwdRule = async () => {
     const rt = (await fetchNoBody(
         `/api/user/pub/pwdrule`,
@@ -20,6 +21,7 @@ export const getPwdRule = async () => {
     return true;
 };
 
+// fill loginToken
 export const postLogin = async (uname: string, pwd: string) => {
     const mForm = new Map<string, any>([
         ["uname", uname.trim()],
@@ -36,7 +38,7 @@ export const postLogin = async (uname: string, pwd: string) => {
         alert(rt[0]);
         return false;
     }
-    loginToken.value = rt[0].auth; // without "Bearer "
+    loginToken.value = rt[0].token; // without "Bearer "
     return true;
 };
 

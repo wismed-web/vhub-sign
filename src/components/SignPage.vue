@@ -92,11 +92,9 @@ watchEffect(async () => {
 
 const mainSite = async () => {
 
-    // *** no longer use 'URL with auth' ***
-    // location.replace(`${URL_MAIN}?auth=${loginToken.value}`)
-
     // *** auth now with cookie ***
-    cookies.set("auth", `${loginToken.value}`, "1d", "/", "." + Domain, false, "Lax"); // cookies.set("myCookie", "John Doe", "1d", "/", "", false, "Lax"); document.cookie = "myCookie=John Doe;SameSite=None;secure=false"
+    cookies.set("token", `${loginToken.value}`, "1d", "/", "." + Domain, false, "Lax"); // cookies.set("myCookie", "John Doe", "1d", "/", "", false, "Lax"); document.cookie = "myCookie=John Doe;SameSite=None;secure=false"
+    // await new Promise((f) => setTimeout(f, 5000));
     location.replace(`${URL_MAIN}`)
 }
 
