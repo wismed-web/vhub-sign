@@ -17,11 +17,11 @@
             <input class="textbox" v-model="pwdReg" type="password" :placeholder="`Password: (${pwdRule})`" required />
             <input class="textbox" v-model="confirmReg" type="password" placeholder="Confirm Password" required />
             <SignCaptcha :belongsTo="'sign-up'"></SignCaptcha>
+            <button class="btn0" :disabled="DisableSignUp || !agrmtSta" @click="Register()" :title="BtnTip">Sign Up</button>
             <span id="agreement">
                 <input type="checkbox" v-model="agrmtSta" />
                 accept <a href="#" @click="ToAgreementPage()">agreement</a>
             </span>
-            <button class="btn0" :disabled="DisableSignUp || !agrmtSta" @click="Register()" :title="BtnTip">Sign Up</button>
             <p id="to-sign-in"> Already have an account?
                 <a href="#" @click="ToSignInPage()">Sign in here</a>
             </p>
@@ -198,9 +198,9 @@ h1 {
 }
 
 #agreement {
-    position: absolute;
-    right: 13%;
-    bottom: 16%;
+    float: right;
+    margin-right: 1%;
+    margin-top: 0.5%;
     font-size: small;
 }
 </style>

@@ -20,10 +20,6 @@ const refCode = ref<CaptchaInstance>(null)
 
 // for style
 const dxTop = ref('')
-const dxLeft = 4.5
-const dxLeftCaptcha = ref(`${dxLeft}%`)
-const dxLeftInput = ref(`${dxLeft + 10}%`)
-const dxLeftBtn = ref(`${dxLeft + 18.5}%`)
 
 // for UI focus
 const answerInput = ref()
@@ -73,25 +69,18 @@ const handleCheck = () => {
 
 <style scoped>
 .captcha {
-    position: absolute;
-    left: v-bind(dxLeftCaptcha);
-    top: v-bind(dxTop);
+    float: left;
+    margin-left: 4.5%;
 }
 
 .answer-box {
-    position: absolute;
-    left: v-bind(dxLeftInput);
-    top: v-bind(dxTop);
-    width: 7%;
-    height: 5.8%;
+    float: left;
+    margin-left: 1%;
     text-align: center;
 }
 
 .answer-btn {
-    position: absolute;
-    left: v-bind(dxLeftBtn);
-    top: v-bind(dxTop);
-    width: 8%;
-    height: 7.8%;
+    float: left;
+    margin-left: 1%;
 }
 </style>
