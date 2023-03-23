@@ -5,10 +5,8 @@
             <input class="textbox" v-model="unameLogin" type="text" placeholder="User Name" ref="unameInputSI" autofocus required />
             <input class="textbox" v-model="pwdLogin" type="password" placeholder="Password" required />
             <SignCaptcha :belongsTo="'sign-in'"></SignCaptcha>
-            <button class="btn0" :disabled="DisableSignIn" @click="Login()" :title="BtnTip">Sign In</button>
-            <p id="to-sign-up"> Don't have an account?
-                <a href="#" @click="ToSignUpPage()">Sign up here</a>
-            </p>
+            <button class="btn0" :disabled="!enableSignIn" @click="Login()">Sign In</button>
+            <p id="to-sign-up"> Don't have an account? <a href="#" @click="ToSignUpPage()">Sign up here</a> </p>
         </div>
         <div v-if="signPage == 'up'">
             <h1>Sign Up</h1>
@@ -17,14 +15,9 @@
             <input class="textbox" v-model="pwdReg" type="password" :placeholder="`Password: (${pwdRule})`" required />
             <input class="textbox" v-model="confirmReg" type="password" placeholder="Confirm Password" required />
             <SignCaptcha :belongsTo="'sign-up'"></SignCaptcha>
-            <button class="btn0" :disabled="DisableSignUp || !agrmtSta" @click="Register()" :title="BtnTip">Sign Up</button>
-            <span id="agreement">
-                <input type="checkbox" v-model="agrmtSta" />
-                accept <a href="#" @click="ToAgreementPage()">agreement</a>
-            </span>
-            <p id="to-sign-in"> Already have an account?
-                <a href="#" @click="ToSignInPage()">Sign in here</a>
-            </p>
+            <button class="btn0" :disabled="!enableSignUp" @click="Register()">Sign Up</button>
+            <span id="agreement"> <input type="checkbox" v-model="agreement" /> accept <a href="#" @click="ToAgreementPage()">agreement</a> </span>
+            <p id="to-sign-in"> Already have an account? <a href="#" @click="ToSignInPage()">Sign in here</a> </p>
         </div>
         <div v-if="signPage == 'verify'">
             <h1>Email Verification</h1>
@@ -34,9 +27,7 @@
             <button class="btn1" @click="Register()">Resent</button>
         </div>
     </div>
-    <div id="page-loader" v-if="loading">
-        <Loader />
-    </div>
+    <Loader id="page-loader" v-if="loading" />
 </template>
 
 <script setup lang="ts">
@@ -46,10 +37,10 @@ import SignCaptcha from "./SignCaptcha.vue";
 import Loader from "./Loader.vue";
 import { loginToken, postLogin, postSignUp, postEmailVerify, getPwdRule, pwdRule } from "@/share/share";
 import { Domain, URL_API, URL_MAIN } from "@/share/ip";
-import { DisableSignIn, DisableSignUp, BtnTip } from "@/share/shared";
+import { CaptchaOK } from "@/share/shared";
 
 const { cookies } = useCookies();
-
+const loading = ref(false);
 const signPage = ref("in"); // page
 const unameLogin = ref("");
 const pwdLogin = ref("");
@@ -58,8 +49,10 @@ const emailReg = ref("");
 const pwdReg = ref("");
 const confirmReg = ref("");
 const codeReg = ref("");
-const agrmtSta = ref(false);
-const loading = ref(false);
+const agreement = ref(false);
+
+const enableSignIn = computed(() => { return unameLogin.value.length > 0 && pwdLogin.value.length > 0 && CaptchaOK.value })
+const enableSignUp = computed(() => { return unameReg.value.length > 0 && emailReg.value.length > 0 && pwdReg.value.length > 0 && confirmReg.value.length > 0 && agreement.value && CaptchaOK.value })
 
 // for UI focus
 const unameInputSI = ref();
@@ -74,14 +67,12 @@ watchEffect(async () => {
     switch (signPage.value) {
         case "in":
             unameInputSI?.value?.focus();
-            DisableSignIn.value = true;
-            BtnTip.value = 'answer question to unlock it';
+            CaptchaOK.value = false;
             break;
 
         case "up":
             unameInputSU?.value?.focus();
-            DisableSignUp.value = true;
-            BtnTip.value = 'answer question to unlock it';
+            CaptchaOK.value = false;
             break;
 
         case "verify":
@@ -133,9 +124,7 @@ const EmailVerification = async () => {
 const ToSignUpPage = () => { signPage.value = "up"; };
 const ToSignInPage = () => { signPage.value = "in"; };
 const ToEmailVerifyPage = () => { signPage.value = "verify"; };
-const ToAgreementPage = () => {
-    window.open(`${URL_API}/agreement`)
-}
+const ToAgreementPage = () => { window.open(`${URL_API}/agreement`) }
 
 </script>
 
@@ -157,7 +146,7 @@ h1 {
     top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 45%;
+    width: 36%;
     height: 32%;
     background-color: white;
     opacity: 0.95;

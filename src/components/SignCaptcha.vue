@@ -1,21 +1,20 @@
 <template>
-    <div v-if="visible">
+    <div v-if="display">
         <Captcha class="captcha" ref="refCode" :width="80" :height="22" :bgColor="'rgba(0,0,0,0.1)'" :borderColor="'#5f5f5f'" />
-        <input class="answer-box" v-model="value" ref="answerInput">
-        <button class="answer-btn" @click="handleCheck()">Check</button>
+        <input class="answer-box" v-model="answer" ref="answerInput">
     </div>
 </template>
 
 <script setup lang="ts">
 
 import Captcha, { CaptchaInstance } from 'vue3-captcha';
-import { DisableSignIn, DisableSignUp, BtnTip } from "@/share/shared";
+import { CaptchaOK } from "@/share/shared";
 
 const props = defineProps({
     belongsTo: String
 })
 
-const value = ref('')
+const answer = ref('')
 const refCode = ref<CaptchaInstance>(null)
 
 // for style
@@ -24,7 +23,7 @@ const dxTop = ref('')
 // for UI focus
 const answerInput = ref()
 
-const visible = ref(true)
+const display = ref(true)
 
 onMounted(async () => {
     switch (props.belongsTo) {
@@ -37,33 +36,13 @@ onMounted(async () => {
     }
 })
 
-const handleCheck = () => {
-
-    // console.log(`${value.value}`)
-
-    if (refCode.value?.check(value.value)) {
-
-        visible.value = false // captcha ok, remove it
-
-        switch (props.belongsTo) {
-            case 'sign-up':
-                DisableSignUp.value = false // captcha ok, allow sign-up
-                BtnTip.value = ''
-                break;
-
-            case 'sign-in':
-                DisableSignIn.value = false // captcha ok, allow sign-in
-                BtnTip.value = ''
-                break;
-        }
-
-    } else {
-
-        alert('Answer is incorrect.\r\nTry again or Click question to refresh for a new one.')
-        value.value = ''
-        answerInput.value.focus()
-    }
-}
+watchEffect(async () => {
+    if (refCode.value?.check(answer.value)) {
+        CaptchaOK.value = true
+    }else {
+        CaptchaOK.value = false
+    } 
+})
 
 </script>
 
@@ -75,12 +54,9 @@ const handleCheck = () => {
 
 .answer-box {
     float: left;
+    width: 15%;
     margin-left: 1%;
     text-align: center;
-}
-
-.answer-btn {
-    float: left;
-    margin-left: 1%;
+    font-size: medium;
 }
 </style>
