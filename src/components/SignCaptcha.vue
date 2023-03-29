@@ -37,11 +37,7 @@ onMounted(async () => {
 })
 
 watchEffect(async () => {
-    if (refCode.value?.check(answer.value)) {
-        CaptchaOK.value = true
-    }else {
-        CaptchaOK.value = false
-    } 
+    CaptchaOK.value = refCode.value?.check(answer.value) && answer.value.length > 0
 })
 
 </script>

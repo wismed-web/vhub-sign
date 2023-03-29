@@ -81,7 +81,7 @@ watchEffect(async () => {
     }
 })
 
-const mainSite = async () => {
+const ToMainSite = async () => {
 
     // *** auth now with cookie ***
     cookies.set("token", `${loginToken.value}`, "1d", "/", "." + Domain, false, "Lax"); // cookies.set("myCookie", "John Doe", "1d", "/", "", false, "Lax"); document.cookie = "myCookie=John Doe;SameSite=None;secure=false"
@@ -93,7 +93,7 @@ const Login = async () => {
     loading.value = true;
     if (await postLogin(unameLogin.value, pwdLogin.value)) {
         // alert('login successfully')
-        mainSite()
+        ToMainSite()
     }
     loading.value = false;
 };
