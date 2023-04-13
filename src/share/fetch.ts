@@ -4,6 +4,14 @@ const ip = URL_API + "/";
 
 export const mEmpty = new Map<string, any>();
 
+export const fetchErr = async (rt: any) => {
+    if (rt.error !== undefined && rt.error != null && rt.error.length > 0) {
+        return rt.error
+    }
+    const val = rt as any[];
+    return val[1] != 200 ? val[0] : null
+}
+
 export const fetchBodyForm = async (
     path: string,
     method: string,
@@ -55,7 +63,9 @@ export const fetchBodyForm = async (
             resolve([json, resp.status]);
         });
     } catch (e) {
-        alert(e + "\nnetwork error: " + url);
+        return {
+            'error': e + "\nnetwork error: " + url
+        }
     }
 };
 
@@ -108,7 +118,9 @@ export const fetchBodyJsonStr = async (
             resolve([json, resp.status]);
         });
     } catch (e) {
-        alert(e + "\nnetwork error: " + url);
+        return {
+            'error': e + "\nnetwork error: " + url
+        }
     }
 };
 
@@ -163,7 +175,9 @@ export const fetchBodyObject = async (
             resolve([json, resp.status]);
         });
     } catch (e) {
-        alert(e + "\nnetwork error: " + url);
+        return {
+            'error': e + "\nnetwork error: " + url
+        }
     }
 };
 
@@ -207,7 +221,9 @@ export const fetchNoBody = async (
             resolve([json, resp.status]);
         });
     } catch (e) {
-        alert(e + "\nnetwork error: " + url);
+        return {
+            'error': e + "\nnetwork error: " + url
+        }
     }
 };
 

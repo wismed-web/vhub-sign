@@ -8,7 +8,7 @@
 <script setup lang="ts">
 
 import Captcha, { CaptchaInstance } from 'vue3-captcha';
-import { CaptchaOK } from "@/share/shared";
+import { CaptchaOK } from "@/share/share";
 
 const props = defineProps({
     belongsTo: String

@@ -33,13 +33,15 @@
 <script setup lang="ts">
 
 import { useCookies } from "vue3-cookies";
+import { useNotification } from "@kyvg/vue3-notification";
 import SignCaptcha from "./SignCaptcha.vue";
 import Loader from "./Loader.vue";
-import { loginToken, postLogin, postSignUp, postEmailVerify, getPwdRule, pwdRule } from "@/share/share";
+import { loginToken, postLogin, postSignUp, postEmailVerify, getPwdRule, CaptchaOK } from "@/share/share";
 import { Domain, URL_API, URL_MAIN } from "@/share/ip";
-import { CaptchaOK } from "@/share/shared";
 
 const { cookies } = useCookies();
+const notification = useNotification();
+
 const loading = ref(false);
 const signPage = ref("in"); // page
 const unameLogin = ref("");
@@ -50,6 +52,7 @@ const pwdReg = ref("");
 const confirmReg = ref("");
 const codeReg = ref("");
 const agreement = ref(false);
+const pwdRule = ref("");
 
 const enableSignIn = computed(() => { return unameLogin.value.length > 0 && pwdLogin.value.length > 0 && CaptchaOK.value })
 const enableSignUp = computed(() => { return unameReg.value.length > 0 && emailReg.value.length > 0 && pwdReg.value.length > 0 && confirmReg.value.length > 0 && agreement.value && CaptchaOK.value })
@@ -60,7 +63,16 @@ const unameInputSU = ref();
 const codeInput = ref();
 
 onMounted(async () => {
-    getPwdRule();
+    const de = await getPwdRule();
+    if (de.error != null) {
+        notification.notify({
+            title: "Cannot fetch password rule as placeholder",
+            text: de.error,
+            type: "error"
+        })
+        return
+    }
+    pwdRule.value = de.data
 })
 
 watchEffect(async () => {
@@ -91,10 +103,18 @@ const ToMainSite = async () => {
 
 const Login = async () => {
     loading.value = true;
-    if (await postLogin(unameLogin.value, pwdLogin.value)) {
-        // alert('login successfully')
-        ToMainSite()
+    const de = await postLogin(unameLogin.value, pwdLogin.value)
+    if (de.error != null) {
+        loading.value = false;
+        notification.notify({
+            title: "Login Failed",
+            text: de.error,
+            type: "error" // "warn", "error", "success"
+        })
+        return
     }
+    loginToken.value = de.data.token; // without "Bearer "
+    ToMainSite()
     loading.value = false;
 };
 
@@ -105,25 +125,50 @@ const Register = async () => {
         return;
     }
     loading.value = true;
-    if (await postSignUp(unameReg.value, emailReg.value, pwdReg.value)) {
-        alert(`verification code sent to your email ${emailReg.value}`);
-        ToEmailVerifyPage();
+    const de = await postSignUp(unameReg.value, emailReg.value, pwdReg.value)
+    if (de.error != null) {
+        loading.value = false;
+        notification.notify({
+            title: "Register Failed",
+            text: de.error,
+            type: "error"
+        })
+        return
     }
+    notification.notify({
+        title: "Notice",
+        text: `verification code sent to your email ${emailReg.value}`,
+        type: "success"
+    })
+    ToEmailVerifyPage();
     loading.value = false;
 };
 
 const EmailVerification = async () => {
     loading.value = true;
-    if (await postEmailVerify(unameReg.value, codeReg.value)) {
-        alert("email verified, please login");
-        ToSignInPage();
+    const de = await postEmailVerify(unameReg.value, codeReg.value)
+    if (de.error != null) {
+        loading.value = false;
+        notification.notify({
+            title: "Email Verification Failed",
+            text: de.error,
+            type: "error"
+        })
+        return
     }
+    notification.notify({
+        title: "Notice",
+        text: "email verified, please login",
+        type: "success"
+    })
+    ToSignInPage();
     loading.value = false;
 };
 
 const ToSignUpPage = () => { signPage.value = "up"; };
 const ToSignInPage = () => { signPage.value = "in"; };
 const ToEmailVerifyPage = () => { signPage.value = "verify"; };
+
 const ToAgreementPage = () => { window.open(`${URL_API}/agreement`) }
 
 </script>

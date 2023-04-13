@@ -1,11 +1,21 @@
 <template>
-    <SignPage v-if="display" />
+    <div v-if="showPage">
+        <SignPage />
+        <div id="copyright">
+            Copyright@2023 TBD | <a href="#" @click="ToPolicyPage()">Privacy Policy</a>
+        </div>
+    </div>
+    <notifications position="top center" :speed="2000" :duration="7000" :closeOnClick="false" />
 </template>
 
 <script setup lang="ts">
 
+import { useNotification } from "@kyvg/vue3-notification";
 import SignPage from "@/components/SignPage.vue";
-import { ping } from "@/share/ping";
+import { getPing } from "@/share/share";
+import { URL_API } from "@/share/ip";
+
+const notification = useNotification()
 
 let Width = window.innerWidth + "px";
 let Height = window.innerHeight + "px";
@@ -17,18 +27,26 @@ const onResize = () => {
     console.log("Height:", Height);
 };
 
-const display = ref(false);
+const showPage = ref(false);
 
 onMounted(async () => {
     // test backend api available
-    display.value = await ping();
-    if (!display.value) {
-        alert("backend api service is not available");
+    const de = await getPing();
+    if (de.error != null) {
+        notification.notify({
+            title: "Backend API Service is NOT Available",
+            text: de.error,
+            type: "error"
+        })
+        return
     }
+    showPage.value = true
 
     // listen browser size change
     window.addEventListener("resize", onResize);
 });
+
+const ToPolicyPage = () => { window.open(`${URL_API}/policy`) }
 
 </script>
 
@@ -47,5 +65,12 @@ body {
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
+}
+
+#copyright {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    margin-bottom: 10px;
 }
 </style>
