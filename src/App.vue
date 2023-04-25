@@ -5,7 +5,7 @@
             Copyright@2023 TBD | <a href="#" @click="ToPolicyPage()">Privacy Policy</a>
         </div>
     </div>
-    <notifications position="top center" :speed="2000" :duration="7000" :closeOnClick="false" />
+    <notifications position="top center" :speed="2000" :duration="4000" :closeOnClick="false" />
 </template>
 
 <script setup lang="ts">
